@@ -391,12 +391,12 @@ async def shutdown() -> None:
     await app.state.store.close()
 
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 async def health() -> dict[str, str]:
     return {"status": "ok", "service": "buysell-product-ingestion-api"}
 
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 async def root() -> dict[str, Any]:
     return {
         "status": "ok",
