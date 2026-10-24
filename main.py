@@ -396,6 +396,16 @@ async def health() -> dict[str, str]:
     return {"status": "ok", "service": "buysell-product-ingestion-api"}
 
 
+@app.get("/")
+async def root() -> dict[str, Any]:
+    return {
+        "status": "ok",
+        "service": "buysell-product-ingestion-api",
+        "health": "/health",
+        "ingestion_endpoint": "/api/v1/ingest/product",
+    }
+
+
 @app.post("/api/v1/ingest/product")
 async def ingest_product(request: Request) -> dict[str, Any]:
     settings: Settings = request.app.state.settings
