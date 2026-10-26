@@ -61,11 +61,14 @@ class Settings:
 
     @classmethod
     def from_env(cls) -> "Settings":
+        # Accept "res.cloudinary.com" as well as pasted URLs such as
+        # "https://res.cloudinary.com/<cloud>/"; an empty value must not
+        # silently reject every media item.
         hosts = frozenset(
-            item.strip().lower()
-            for item in os.getenv("INGESTION_ALLOWED_MEDIA_HOSTS", "res.cloudinary.com").split(",")
+            (urlparse(item.strip() if "://" in item else f"https://{item.strip()}").hostname or "").lower()
+            for item in (os.getenv("INGESTION_ALLOWED_MEDIA_HOSTS") or "res.cloudinary.com").split(",")
             if item.strip()
-        )
+        ) - {""} or frozenset({"res.cloudinary.com"})
         return cls(
             supabase_url=required("SUPABASE_URL").rstrip("/"),
             service_role_key=required("SUPABASE_SERVICE_ROLE_KEY"),
